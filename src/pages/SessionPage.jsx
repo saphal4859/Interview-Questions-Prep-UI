@@ -47,6 +47,7 @@ export default function SessionPage() {
 
   const isSessionComplete =
     targetCount > 0 && (achievedCount === targetCount || isSessionEnded);
+  const [autoShowAnswer, setAutoShowAnswer] = useState(false);
 
   // load metadata
   useEffect(() => {
@@ -86,9 +87,7 @@ export default function SessionPage() {
     const resolvedSubCategories =
       subCategories.length > 0
         ? subCategories
-        : resolvedCategories.flatMap(
-            (c) => meta.subCategories[c] || []
-          );
+        : resolvedCategories.flatMap((c) => meta.subCategories[c] || []);
 
     const resolvedDifficulties =
       difficulties.length > 0 ? difficulties : meta.difficulties;
@@ -147,14 +146,18 @@ export default function SessionPage() {
 
     const nextIndex = currentIndex + 1;
     setCurrentIndex(nextIndex);
-    setShowAnswer(false);
+    if (!autoShowAnswer) {
+      setShowAnswer(false);
+    }
 
     if (nextIndex >= questions.length - 2) fetchNext();
   };
 
   const prev = () => {
     setCurrentIndex((i) => Math.max(0, i - 1));
-    setShowAnswer(false);
+    if (!autoShowAnswer) {
+      setShowAnswer(false);
+    }
   };
 
   return (
@@ -178,14 +181,20 @@ export default function SessionPage() {
         <div className="w-full max-w-[1400px] mx-auto px-6 py-6">
           {/* TIMER */}
           {sessionId && !isSessionComplete && (
-            <div className="mb-4 flex justify-between text-sm text-gray-600">
-              <span className="font-medium">
+            <div className="mb-4 flex justify-between items-center">
+              <span className="text-sm font-medium text-gray-700">
                 Interview Practice Session
               </span>
-              <span>
-                ⏱ {Math.floor(elapsed / 60)}:
-                {(elapsed % 60).toString().padStart(2, "0")}
-              </span>
+
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <span className="text-gray-600">Auto show answers</span>
+                <input
+                  type="checkbox"
+                  checked={autoShowAnswer}
+                  onChange={(e) => setAutoShowAnswer(e.target.checked)}
+                  className="h-4 w-4 accent-indigo-600"
+                />
+              </label>
             </div>
           )}
 
@@ -201,6 +210,7 @@ export default function SessionPage() {
                   currentIndex={currentIndex}
                   totalCount={targetCount}
                   showAnswer={showAnswer}
+                  autoShowAnswer={autoShowAnswer}
                   onShowAnswer={() => setShowAnswer(true)}
                   achievedCount={achievedCount}
                 />

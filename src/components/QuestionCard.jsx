@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import ReactMarkdown from "react-markdown";
@@ -9,12 +9,17 @@ export default function QuestionCard({
   currentIndex,
   totalCount,
   showAnswer,
+  autoShowAnswer,
   onShowAnswer,
   achievedCount,
 }) {
   const [showExplanation, setShowExplanation] = useState(false);
   const [showCode, setShowCode] = useState(false);
-
+  useEffect(() => {
+    if (autoShowAnswer && !showAnswer) {
+      onShowAnswer();
+    }
+  }, [question, autoShowAnswer]);
   if (!question && totalCount === 0) {
     return (
       <div className="mt-20 text-center text-gray-500">
@@ -56,14 +61,16 @@ export default function QuestionCard({
           </span>
 
           <span>
-            Achieved:{" "}
-            <b className="text-gray-800">{achievedCount}</b>
+            Achieved: <b className="text-gray-800">{achievedCount}</b>
           </span>
         </div>
       )}
 
       {/* Question */}
-      <div className="text-xl font-semibold text-gray-900">
+      <div
+        className="font-semibold leading-snug transition-colors
+    text-2xl md:text-3xl text-red-600"
+      >
         {question.questionText}
       </div>
 
