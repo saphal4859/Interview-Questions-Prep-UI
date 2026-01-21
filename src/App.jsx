@@ -8,15 +8,15 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   // 🔹 Keep Render backend warm
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetch("https://interview-questions-prep.onrender.com/health-check").catch(
-        () => {}
-      );
-    }, 5 * 60 * 1000);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     fetch("https://interview-questions-prep.onrender.com/health-check").catch(
+  //       () => {}
+  //     );
+  //   }, 5 * 60 * 1000);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   // 🔹 Initial page load loader
   useEffect(() => {
