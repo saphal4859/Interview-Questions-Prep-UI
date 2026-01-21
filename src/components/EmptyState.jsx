@@ -1,13 +1,15 @@
+import Lottie from "lottie-react";
+import emptyStateAnimation from "../assets/svg/empty-state.json";
 export default function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center py-24 text-center">
-      {/* Lottie animation */}
-      <dotlottie-wc
-        src="https://lottie.host/d9bfd8ba-371f-4b02-9014-1a937eace2e3/2Zx4ZQvqAp.lottie"
-        autoplay
+      {/* Lottie animation (local) */}
+      <Lottie
+        animationData={emptyStateAnimation}
         loop
-        style={{ width: "420px", height: "420px" }}
-      ></dotlottie-wc>
+        autoplay
+        style={{ width: 720, height: 420 }}
+      />
 
       {/* Text */}
       <h3 className="text-xl font-semibold text-gray-800 mt-4">
