@@ -33,17 +33,20 @@ export default function AddQuestionDrawer({
   useEffect(() => {
     if (!open) return;
 
+    // EDIT MODE → initialize once
     if (editingQuestion) {
       setForm(editingQuestion);
-    } else {
-      setForm({
-        ...emptyForm,
-        category: presetFilters.category || "",
-        subCategory: presetFilters.subCategory || "",
-        difficulty: presetFilters.difficulty || "",
-      });
+      return;
     }
-  }, [open, presetFilters, editingQuestion]);
+
+    // ADD MODE → initialize with preset filters
+    setForm({
+      ...emptyForm,
+      category: presetFilters.category || "",
+      subCategory: presetFilters.subCategory || "",
+      difficulty: presetFilters.difficulty || "",
+    });
+  }, [open, editingQuestion]);
 
   const submit = async () => {
     setStatus("submitting");
@@ -53,10 +56,7 @@ export default function AddQuestionDrawer({
 
       if (editingQuestion?.id) {
         // ✅ UPDATE
-        res = await api.put(
-          `/api/questions/${editingQuestion.id}`,
-          form
-        );
+        res = await api.put(`/api/questions/${editingQuestion.id}`, form);
         onQuestionUpdated?.(res.data);
       } else {
         // ✅ CREATE
@@ -163,9 +163,7 @@ export default function AddQuestionDrawer({
             {/* Difficulty */}
             <select
               value={form.difficulty}
-              onChange={(e) =>
-                setForm({ ...form, difficulty: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, difficulty: e.target.value })}
               className="w-full border rounded-md px-3 py-2"
             >
               <option value="">Difficulty</option>
