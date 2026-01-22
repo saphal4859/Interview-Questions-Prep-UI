@@ -50,7 +50,7 @@ export default function QuestionCard({
 
       {/* Header */}
       {totalCount > 0 && (
-        <div className="flex justify-between items-center mb-4 text-sm text-gray-500">
+<div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center mb-4 text-sm text-gray-500">
           <span className="flex flex-wrap items-center gap-2">
             <span>
               Question{" "}
@@ -106,8 +106,9 @@ export default function QuestionCard({
 
       {/* Question */}
       <div
-        className="font-semibold leading-snug transition-colors
-    text-2xl md:text-3xl text-red-600"
+        className="font-semibold leading-snug
+  text-xl sm:text-2xl md:text-3xl text-red-600"
+
       >
         {question.questionText}
       </div>
@@ -117,7 +118,7 @@ export default function QuestionCard({
         <div className="mt-6">
           <button
             onClick={onShowAnswer}
-            className="px-6 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700"
+            className="w-full sm:w-auto px-6 py-3 rounded-md bg-indigo-600 text-white hover:bg-indigo-700"
           >
             Show Answer
           </button>
