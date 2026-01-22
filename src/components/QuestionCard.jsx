@@ -50,13 +50,43 @@ export default function QuestionCard({
       {/* Header */}
       {totalCount > 0 && (
         <div className="flex justify-between items-center mb-4 text-sm text-gray-500">
-          <span>
-            Question{" "}
-            <b className="text-gray-800">
-              {currentIndex + 1} / {totalCount}
-            </b>
+          <span className="flex flex-wrap items-center gap-2">
+            <span>
+              Question{" "}
+              <b className="text-gray-800">
+                {currentIndex + 1} / {totalCount}
+              </b>
+            </span>
+
             {question?.id && (
-              <span className="ml-2 text-gray-400">• ID: {question.id}</span>
+              <span className="text-gray-400">• ID: {question.id}</span>
+            )}
+
+            {question?.category && (
+              <span className="uppercase px-2 py-0.5 text-xs rounded bg-blue-50 text-blue-700 font-medium">
+                {question.category}
+              </span>
+            )}
+
+            {question?.subCategory && (
+              <span className="uppercase px-2 py-0.5 text-xs rounded bg-purple-50 text-purple-700 font-medium">
+                {question.subCategory}
+              </span>
+            )}
+
+            {question?.difficulty && (
+              <span
+                className={`uppercase px-2 py-0.5 text-xs rounded font-semibold
+        ${
+          question.difficulty === "EASY"
+            ? "bg-green-50 text-green-700"
+            : question.difficulty === "MEDIUM"
+              ? "bg-yellow-50 text-yellow-700"
+              : "bg-red-50 text-red-700"
+        }`}
+              >
+                {question.difficulty}
+              </span>
             )}
           </span>
 
