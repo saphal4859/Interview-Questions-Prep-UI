@@ -48,6 +48,7 @@ export default function SessionPage() {
   const isSessionComplete =
     targetCount > 0 && (achievedCount === targetCount || isSessionEnded);
   const [autoShowAnswer, setAutoShowAnswer] = useState(false);
+  const [editingQuestion, setEditingQuestion] = useState(null);
 
   // load metadata
   useEffect(() => {
@@ -213,6 +214,10 @@ export default function SessionPage() {
                   autoShowAnswer={autoShowAnswer}
                   onShowAnswer={() => setShowAnswer(true)}
                   achievedCount={achievedCount}
+                  onEdit={(q) => {
+                    setEditingQuestion(q);
+                    setShowAddDrawer(true);
+                  }}
                 />
 
                 <NavigationControls
@@ -244,8 +249,17 @@ export default function SessionPage() {
 
       <AddQuestionDrawer
         open={showAddDrawer}
-        onClose={() => setShowAddDrawer(false)}
+        onClose={() => {
+          setShowAddDrawer(false);
+          setEditingQuestion(null);
+        }}
         meta={meta}
+        editingQuestion={editingQuestion}
+        onQuestionUpdated={(updated) => {
+          setQuestions((prev) =>
+            prev.map((q) => (q.id === updated.id ? updated : q)),
+          );
+        }}
         presetFilters={{
           category: categories[0],
           subCategory: subCategories[0],

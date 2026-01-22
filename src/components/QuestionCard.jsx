@@ -12,6 +12,7 @@ export default function QuestionCard({
   autoShowAnswer,
   onShowAnswer,
   achievedCount,
+  onEdit, 
 }) {
   const [showExplanation, setShowExplanation] = useState(false);
   const [showCode, setShowCode] = useState(false);
@@ -93,6 +94,13 @@ export default function QuestionCard({
           <span>
             Achieved: <b className="text-gray-800">{achievedCount}</b>
           </span>
+          {/* ✅ EDIT BUTTON */}
+          <button
+            onClick={() => onEdit(question)}
+            className="text-xs px-3 py-1 rounded-md border hover:bg-gray-100"
+          >
+            ✏️ Edit
+          </button>
         </div>
       )}
 

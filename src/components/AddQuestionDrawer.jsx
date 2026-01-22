@@ -19,25 +19,50 @@ export default function AddQuestionDrawer({
   onClose,
   meta,
   presetFilters = {},
+  editingQuestion,
+  onQuestionUpdated,
 }) {
   const [form, setForm] = useState(emptyForm);
   const [status, setStatus] = useState("idle"); // idle | submitting | success | error
 
+  /**
+   * Prefill logic
+   * - Edit → load full question
+   * - Add  → apply preset filters
+   */
   useEffect(() => {
     if (!open) return;
 
-    setForm((f) => ({
-      ...f,
-      category: presetFilters.category || "",
-      subCategory: presetFilters.subCategory || "",
-      difficulty: presetFilters.difficulty || "",
-    }));
-  }, [open, presetFilters]);
+    if (editingQuestion) {
+      setForm(editingQuestion);
+    } else {
+      setForm({
+        ...emptyForm,
+        category: presetFilters.category || "",
+        subCategory: presetFilters.subCategory || "",
+        difficulty: presetFilters.difficulty || "",
+      });
+    }
+  }, [open, presetFilters, editingQuestion]);
 
   const submit = async () => {
     setStatus("submitting");
+
     try {
-      await api.post("/api/questions", form);
+      let res;
+
+      if (editingQuestion?.id) {
+        // ✅ UPDATE
+        res = await api.put(
+          `/api/questions/${editingQuestion.id}`,
+          form
+        );
+        onQuestionUpdated?.(res.data);
+      } else {
+        // ✅ CREATE
+        await api.post("/api/questions", form);
+      }
+
       setStatus("success");
 
       confetti({
@@ -51,7 +76,8 @@ export default function AddQuestionDrawer({
         setStatus("idle");
         onClose();
       }, 1200);
-    } catch {
+    } catch (e) {
+      console.error(e);
       setStatus("error");
     }
   };
@@ -67,7 +93,7 @@ export default function AddQuestionDrawer({
         open ? "pointer-events-auto" : "pointer-events-none"
       }`}
     >
-      {/* backdrop */}
+      {/* Backdrop */}
       <div
         onClick={onClose}
         className={`absolute inset-0 bg-black/30 transition-opacity ${
@@ -75,26 +101,37 @@ export default function AddQuestionDrawer({
         }`}
       />
 
-      {/* drawer */}
+      {/* Drawer */}
       <div
         className={`absolute right-0 top-0 h-full w-[440px] bg-white shadow-2xl
         transform transition-transform duration-300 ease-out
         ${open ? "translate-x-0" : "translate-x-full"}`}
       >
         <div className="h-full flex flex-col">
+          {/* Header */}
           <div className="px-6 py-4 border-b flex justify-between items-center">
-            <h2 className="text-lg font-semibold">➕ Add Question</h2>
-            <button onClick={onClose} className="text-gray-400 hover:text-black">
+            <h2 className="text-lg font-semibold">
+              {editingQuestion ? "✏️ Edit Question" : "➕ Add Question"}
+            </h2>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-black"
+            >
               ✕
             </button>
           </div>
 
+          {/* Body */}
           <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
             {/* Category */}
             <select
               value={form.category}
               onChange={(e) =>
-                setForm({ ...form, category: e.target.value, subCategory: "" })
+                setForm({
+                  ...form,
+                  category: e.target.value,
+                  subCategory: "",
+                })
               }
               className="w-full border rounded-md px-3 py-2"
             >
@@ -161,7 +198,7 @@ export default function AddQuestionDrawer({
               rows={2}
             />
 
-            {/* Explanation (Markdown) */}
+            {/* Explanation */}
             <textarea
               placeholder="Explanation (Markdown supported)"
               value={form.explanation}
@@ -195,23 +232,22 @@ export default function AddQuestionDrawer({
             />
           </div>
 
+          {/* Footer */}
           <div className="p-4 border-t">
             <button
               onClick={submit}
               disabled={status === "submitting"}
               className={`w-full py-3 rounded-lg text-white font-medium transition-all
-                ${
-                  status === "idle" &&
-                  "bg-indigo-600 hover:bg-indigo-700"
-                }
+                ${status === "idle" && "bg-indigo-600 hover:bg-indigo-700"}
                 ${status === "submitting" && "bg-indigo-400"}
                 ${status === "success" && "bg-green-500"}
                 ${status === "error" && "bg-red-500"}
               `}
             >
-              {status === "idle" && "Add Question"}
+              {status === "idle" &&
+                (editingQuestion ? "Update Question" : "Add Question")}
               {status === "submitting" && "Saving…"}
-              {status === "success" && "✓ Added"}
+              {status === "success" && "✓ Saved"}
               {status === "error" && "Failed"}
             </button>
           </div>
