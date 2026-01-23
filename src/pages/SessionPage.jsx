@@ -49,6 +49,7 @@ export default function SessionPage() {
     targetCount > 0 && (achievedCount === targetCount || isSessionEnded);
   const [autoShowAnswer, setAutoShowAnswer] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(null);
+  const [shuffle, setShuffle] = useState(true); // default ON
 
   // load metadata
   useEffect(() => {
@@ -99,6 +100,7 @@ export default function SessionPage() {
       categories: resolvedCategories,
       subCategories: resolvedSubCategories,
       difficulties: resolvedDifficulties,
+      shuffle,
     });
 
     setSessionId(res.data.sessionId);
@@ -176,6 +178,8 @@ export default function SessionPage() {
         hasActiveSession={!!sessionId && !isSessionComplete}
         loading={loading}
         onAddQuestion={() => setShowAddDrawer(true)}
+        shuffle={shuffle}
+  setShuffle={setShuffle}
       />
 
       <div className="min-h-[calc(100vh-64px)] bg-slate-50">
@@ -186,7 +190,6 @@ export default function SessionPage() {
               <span className="text-sm font-medium text-gray-700">
                 Interview Practice Session
               </span>
-
               <label className="flex items-center gap-2 text-sm cursor-pointer">
                 <span className="text-gray-600">Auto show answers</span>
                 <input

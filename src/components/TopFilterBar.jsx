@@ -1,4 +1,5 @@
 import MultiSelect from "./MultiSelect";
+import ToggleSwitch from "./ToggleSwitch";
 
 export default function TopFilterBar({
   meta,
@@ -13,6 +14,8 @@ export default function TopFilterBar({
   hasActiveSession,
   loading,
   onAddQuestion,
+  shuffle,
+  setShuffle,
 }) {
   const categoryOptions = meta.categories.map((c) => ({
     label: c.replaceAll("_", " "),
@@ -67,6 +70,12 @@ export default function TopFilterBar({
           value={difficulties.map((d) => ({ label: d, value: d }))}
           onChange={(vals) => setDifficulties(vals.map((v) => v.value))}
           placeholder="Difficulty"
+        />
+        <ToggleSwitch
+          label="Shuffle"
+          checked={shuffle}
+          disabled={hasActiveSession}
+          onChange={setShuffle}
         />
 
         <div className="ml-auto flex gap-2">
