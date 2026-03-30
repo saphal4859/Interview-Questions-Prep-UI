@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
 import SessionPage from "./pages/SessionPage";
 import DashboardPage from "./pages/DashboardPage";
+import RevisionPage from "./pages/RevisionPage";
 import LottieLoader from "./components/LottieLoader";
 
 export default function App() {
@@ -36,6 +37,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<SessionPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/revision" element={<RevisionPage />} />
       </Routes>
     </BrowserRouter>
   );
