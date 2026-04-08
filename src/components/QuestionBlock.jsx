@@ -1,11 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-export default function QuestionBlock({ q, index }) {
+export default function QuestionBlock({ q, index, expandAll }) {
   const [showExplanation, setShowExplanation] = useState(false);
+
+  useEffect(() => {
+    setShowExplanation(expandAll);
+  }, [expandAll]);
 
   return (
     <div className="border-b py-4">
@@ -24,7 +28,7 @@ export default function QuestionBlock({ q, index }) {
         </button>
       </div>
 
-      {/* 🔹 Inline tags (compact) */}
+      {/* 🔹 Tags */}
       <div className="text-[11px] text-gray-400 mt-1">
         {q.category} • {q.subCategory} • {q.difficulty}
       </div>
@@ -34,18 +38,16 @@ export default function QuestionBlock({ q, index }) {
         {q.shortAnswer}
       </div>
 
-      {/* 🔹 Explanation (Markdown + Code) */}
+      {/* 🔹 Explanation */}
       {showExplanation && (
         <div className="mt-3 text-sm space-y-3 animate-fade-in">
 
-          {/* Markdown explanation */}
           <div className="prose prose-sm max-w-none">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {q.explanation}
+              {q.explanation || "No explanation available"}
             </ReactMarkdown>
           </div>
 
-          {/* Code */}
           {q.codeSnippet && (
             <div className="rounded-md overflow-hidden border">
               <SyntaxHighlighter
