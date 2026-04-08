@@ -12,26 +12,33 @@ export default function DashboardPage() {
       .catch(console.error);
   }, []);
 
-  if (!data) return null;
+  // ✅ Loading State
+  if (!data) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-gray-500 text-sm">
+        Loading dashboard...
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-white px-10 py-8">
+    <div className="min-h-screen bg-gray-50 px-6 md:px-12 py-10">
       {/* Header */}
-      <HomeButton></HomeButton>
-      <h1 className="text-2xl text-center font-semibold text-gray-900 mb-6">
-        Dashboard
-      </h1>
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+        <HomeButton />
+      </div>
 
-      {/* Summary */}
-      <div className="flex gap-6 mb-8">
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <SummaryCard label="Categories" value={data.summary.totalCategories} />
         <SummaryCard label="Sub Categories" value={data.summary.totalSubCategories} />
         <SummaryCard label="Questions" value={data.summary.totalQuestions} />
       </div>
 
       {/* Table */}
-      <div className="border rounded-xl overflow-hidden">
-        <div className="grid grid-cols-12 px-6 py-3 text-sm text-gray-500 bg-gray-50">
+      <div className="bg-white shadow-sm rounded-2xl overflow-hidden border border-gray-100">
+        <div className="grid grid-cols-12 px-6 py-4 text-xs font-semibold text-gray-500 uppercase bg-gray-100">
           <div className="col-span-6">Category</div>
           <div className="col-span-3 text-center">Sub Topics</div>
           <div className="col-span-3 text-center">Questions</div>
@@ -47,9 +54,13 @@ export default function DashboardPage() {
 
 function SummaryCard({ label, value }) {
   return (
-    <div className="flex-1 border rounded-xl px-6 py-4">
-      <p className="text-sm text-gray-500">{label}</p>
-      <p className="text-2xl font-semibold text-gray-900">{value}</p>
+    <div className="bg-gradient-to-br from-gray-50 to-white shadow-md rounded-2xl px-6 py-5 hover:shadow-lg transition-all">
+      <p className="text-xs text-gray-500 uppercase tracking-wide">
+        {label}
+      </p>
+      <p className="text-3xl font-bold text-gray-900 mt-1">
+        {value}
+      </p>
     </div>
   );
 }
