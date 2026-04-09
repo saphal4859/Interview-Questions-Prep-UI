@@ -2,10 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Optional global polish */
-body {
-  @apply bg-gray-50 text-gray-900;
+/* 🌍 GLOBAL SMOOTHNESS */
+html {
+  scroll-behavior: smooth;
 }
+
+body {
+  @apply bg-gray-50 text-gray-900 antialiased;
+}
+
+/* Better touch feel on mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 🧠 SELECTION UX */
+::selection {
+  background: #6366f1; /* indigo-500 */
+  color: white;
+}
+
+/* 🔥 SCROLLBAR (modern subtle look) */
+::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.4); /* slate-500 */
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.7);
+}
+
+/* 🌊 SMOOTH ANIMATIONS */
 @keyframes fadeSlide {
   from {
     opacity: 0;
@@ -18,14 +50,31 @@ body {
 }
 
 .animate-fade-slide {
-  animation: fadeSlide 0.3s ease-out;
+  animation: fadeSlide 0.25s ease-out;
 }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Floating (reduce intensity for subtle feel) */
 @keyframes float {
   0% {
     transform: translateY(0px);
   }
   50% {
-    transform: translateY(-8px);
+    transform: translateY(-6px);
   }
   100% {
     transform: translateY(0px);
@@ -33,13 +82,27 @@ body {
 }
 
 .animate-float {
-  animation: float 4s ease-in-out infinite;
+  animation: float 3.5s ease-in-out infinite;
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.8s ease-out;
+/* ⚡ BUTTON / INTERACTION POLISH */
+button {
+  transition: all 0.2s ease;
 }
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; }
+
+button:active {
+  transform: scale(0.97);
+}
+
+/* 🧊 INPUT SMOOTHNESS */
+input, textarea, select {
+  transition: all 0.2s ease;
+}
+
+/* 💤 DISABLE ANIMATIONS FOR USERS WHO PREFER LESS MOTION */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
 }
