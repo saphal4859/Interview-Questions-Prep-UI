@@ -103,9 +103,11 @@ export default function AddQuestionDrawer({
 
       {/* Drawer */}
       <div
-        className={`absolute right-0 top-0 h-full w-[440px] bg-white shadow-2xl
-        transform transition-transform duration-300 ease-out
-        ${open ? "translate-x-0" : "translate-x-full"}`}
+        className={`absolute right-0 top-0 h-full 
+  w-full sm:w-[520px] md:w-[600px] lg:w-[700px]
+  bg-white shadow-2xl
+  transform transition-transform duration-300 ease-out
+  ${open ? "translate-x-0" : "translate-x-full"}`}
       >
         <div className="h-full flex flex-col">
           {/* Header */}
@@ -175,37 +177,48 @@ export default function AddQuestionDrawer({
             </select>
 
             {/* Question */}
-            <textarea
-              placeholder="Question"
-              value={form.questionText}
-              onChange={(e) =>
-                setForm({ ...form, questionText: e.target.value })
-              }
-              className="w-full border rounded-md px-3 py-2"
-              rows={3}
-            />
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">
+                Question
+              </label>
+              <textarea
+                value={form.questionText}
+                onChange={(e) =>
+                  setForm({ ...form, questionText: e.target.value })
+                }
+                className="w-full border rounded-md px-3 py-2"
+                rows={3}
+              />
+            </div>
 
             {/* Short Answer */}
-            <textarea
-              placeholder="Short Answer"
-              value={form.shortAnswer}
-              onChange={(e) =>
-                setForm({ ...form, shortAnswer: e.target.value })
-              }
-              className="w-full border rounded-md px-3 py-2"
-              rows={2}
-            />
-
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">
+                Short Answer
+              </label>
+              <textarea
+                value={form.shortAnswer}
+                onChange={(e) =>
+                  setForm({ ...form, shortAnswer: e.target.value })
+                }
+                className="w-full border rounded-md px-3 py-2"
+                rows={4}
+              />
+            </div>
             {/* Explanation */}
-            <textarea
-              placeholder="Explanation (Markdown supported)"
-              value={form.explanation}
-              onChange={(e) =>
-                setForm({ ...form, explanation: e.target.value })
-              }
-              className="w-full border rounded-md px-3 py-2 font-mono"
-              rows={5}
-            />
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">
+                Explanation (Markdown supported)
+              </label>
+              <textarea
+                value={form.explanation}
+                onChange={(e) =>
+                  setForm({ ...form, explanation: e.target.value })
+                }
+                className="w-full border rounded-md px-3 py-2 font-mono"
+                rows={10}
+              />
+            </div>
 
             {form.explanation && (
               <div className="border rounded-md p-3 bg-gray-50">
@@ -219,15 +232,19 @@ export default function AddQuestionDrawer({
             )}
 
             {/* Code */}
-            <textarea
-              placeholder="Java Code Snippet"
-              value={form.codeSnippet}
-              onChange={(e) =>
-                setForm({ ...form, codeSnippet: e.target.value })
-              }
-              className="w-full rounded-md px-3 py-2 font-mono bg-gray-900 text-green-300"
-              rows={5}
-            />
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">
+                Code Snippet
+              </label>
+              <textarea
+                value={form.codeSnippet}
+                onChange={(e) =>
+                  setForm({ ...form, codeSnippet: e.target.value })
+                }
+                className="w-full rounded-md px-3 py-2 font-mono bg-gray-900 text-green-300"
+                rows={10}
+              />
+            </div>
           </div>
 
           {/* Footer */}

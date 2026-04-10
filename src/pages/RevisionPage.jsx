@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../api/api";
 import TopFilterBar from "../components/TopFilterBar";
 import QuestionBlock from "../components/QuestionBlock";
-
+import AddQuestionDrawer from "../components/AddQuestionDrawer";
 export default function RevisionPage() {
   // 🔹 Metadata
   const [meta, setMeta] = useState({
@@ -10,7 +10,7 @@ export default function RevisionPage() {
     subCategories: {},
     difficulties: [],
   });
-
+  const [totalCount, setTotalCount] = useState(0);
   // 🔹 Filters
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
@@ -31,12 +31,17 @@ export default function RevisionPage() {
 
   // 🔥 GLOBAL TOGGLE
   const [expandAll, setExpandAll] = useState(false);
-
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [editingQuestion, setEditingQuestion] = useState(null);
   // 🔹 Load metadata
   useEffect(() => {
     api.get("/api/metadata/filters").then((res) => setMeta(res.data));
   }, []);
-
+  const handleEdit = (question) => {
+    setExpandAll(false);
+    setEditingQuestion(question);
+    setIsDrawerOpen(true);
+  };
   // 🔹 Start Session
   const fetchQuestions = async () => {
     try {
@@ -62,7 +67,7 @@ export default function RevisionPage() {
 
       setSessionId(res.data.sessionId);
       setQuestions(res.data.questions);
-
+      setTotalCount(res.data.totalCount);
       // ✅ Reset
       setPage(0);
       setExpandAll(false);
@@ -141,7 +146,9 @@ export default function RevisionPage() {
         </div>
         {questions.length > 0 && (
           <p className="text-sm text-gray-500 mb-4">
-            Showing {page * 50 + 1} – {page * 50 + questions.length}
+            Showing <b>{page * 50 + 1}</b> –{" "}
+            <b>{page * 50 + questions.length}</b> of <b>{totalCount}</b>{" "}
+            questions
           </p>
         )}
 
@@ -168,6 +175,7 @@ export default function RevisionPage() {
                 q={q}
                 index={page * 50 + index}
                 expandAll={expandAll}
+                onEdit={handleEdit}
               />
             ))}
           </div>
@@ -185,6 +193,24 @@ export default function RevisionPage() {
             </button>
           </div>
         )}
+        <AddQuestionDrawer
+          open={isDrawerOpen}
+          onClose={() => {
+            setIsDrawerOpen(false);
+            setEditingQuestion(null);
+          }}
+          meta={meta}
+          editingQuestion={editingQuestion}
+          onQuestionUpdated={(updatedQuestion) => {
+            // 🔥 instant UI update
+            setQuestions((prev) =>
+              prev.map((q) =>
+                q.id === updatedQuestion.id ? updatedQuestion : q,
+              ),
+            );
+            setIsDrawerOpen(false);
+          }}
+        />
       </div>
     </div>
   );
