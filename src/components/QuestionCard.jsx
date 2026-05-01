@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import { api } from "../api/api";
 import { FaTrash } from "react-icons/fa";
 import toast from "react-hot-toast";
+import { FiExternalLink } from "react-icons/fi";
 export default function QuestionCard({
   question,
   currentIndex,
@@ -102,12 +103,28 @@ export default function QuestionCard({
       {totalCount > 0 && (
         <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center mb-4 text-sm text-gray-500">
           <span className="flex flex-wrap items-center gap-2">
-            <span>
-              Question{" "}
-              <b className="text-gray-800">
-                {currentIndex + 1} / {totalCount}
-              </b>
-            </span>
+            <div className="flex items-center gap-2">
+              <span>
+                Question{" "}
+                <b className="text-gray-800">
+                  {currentIndex + 1} / {totalCount}
+                </b>
+              </span>
+
+              {q.link && (
+                <a
+                  href={
+                    q.link.startsWith("http") ? q.link : `https://${q.link}`
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:text-blue-700 text-sm transition"
+                  title="Open problem"
+                >
+                  <FiExternalLink />
+                </a>
+              )}
+            </div>
 
             {question?.id && (
               <span className="text-gray-400">• ID: {question.id}</span>

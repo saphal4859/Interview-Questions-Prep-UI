@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import { api } from "../api/api";
 import { FaTrash } from "react-icons/fa";
 import toast from "react-hot-toast";
+import { FiExternalLink } from "react-icons/fi";
 export default function QuestionBlock({
   q,
   index,
@@ -70,8 +71,22 @@ export default function QuestionBlock({
       {/* 🔹 Question + Explain button */}
       <div className="flex items-start justify-between gap-3">
         {/* Question */}
-        <h2 className="text-sm sm:text-base font-medium text-gray-800 leading-snug flex-1">
-          {index + 1}. {q.questionText}
+        <h2 className="text-sm sm:text-base font-medium text-gray-800 leading-snug flex-1 flex items-center gap-2">
+          <span>
+            {index + 1}. {q.questionText}
+          </span>
+
+          {q.link && (
+            <a
+              href={q.link.startsWith("http") ? q.link : `https://${q.link}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-400 hover:text-blue-600 text-sm transition flex items-center"
+              title="Open problem"
+            >
+              <FiExternalLink />
+            </a>
+          )}
         </h2>
 
         {/* Buttons (RIGHT SIDE, TOGETHER) */}
