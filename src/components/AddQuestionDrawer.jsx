@@ -9,6 +9,7 @@ const emptyForm = {
   subCategory: "",
   difficulty: "",
   questionText: "",
+  link: "",
   shortAnswer: "",
   explanation: "",
   codeSnippet: "",
@@ -190,7 +191,31 @@ export default function AddQuestionDrawer({
                 rows={3}
               />
             </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">
+                Reference Link (optional)
+              </label>
 
+              <input
+                type="text"
+                value={form.link}
+                onChange={(e) => setForm({ ...form, link: e.target.value })}
+                placeholder="https://example.com"
+                className="w-full border rounded-md px-3 py-2"
+              />
+
+              {/* 👇 ADD THIS HERE */}
+              {form.link && (
+                <a
+                  href={form.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 text-sm underline mt-1 inline-block"
+                >
+                  Open Link ↗
+                </a>
+              )}
+            </div>
             {/* Short Answer */}
             <div>
               <label className="text-sm font-medium text-gray-700 mb-1 block">
