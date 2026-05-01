@@ -42,6 +42,10 @@ export default function RevisionPage() {
     setEditingQuestion(question);
     setIsDrawerOpen(true);
   };
+  // Handle delete
+  const handleDelete = (id) => {
+    setQuestions((prev) => prev.filter((q) => q.id !== id));
+  };
   // 🔹 Start Session
   const fetchQuestions = async () => {
     try {
@@ -176,6 +180,7 @@ export default function RevisionPage() {
                 index={page * 50 + index}
                 expandAll={expandAll}
                 onEdit={handleEdit}
+                onDelete={handleDelete}
               />
             ))}
           </div>

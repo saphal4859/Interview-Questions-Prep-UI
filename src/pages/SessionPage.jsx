@@ -162,6 +162,17 @@ export default function SessionPage() {
       setShowAnswer(false);
     }
   };
+  const handleDelete = (id) => {
+    setQuestions((prev) => prev.filter((q) => q.id !== id));
+
+    // ⚠️ Fix index if needed
+    setCurrentIndex((prev) => {
+      if (prev >= questions.length - 1) {
+        return Math.max(0, prev - 1);
+      }
+      return prev;
+    });
+  };
 
   return (
     <>
@@ -179,7 +190,7 @@ export default function SessionPage() {
         loading={loading}
         onAddQuestion={() => setShowAddDrawer(true)}
         shuffle={shuffle}
-  setShuffle={setShuffle}
+        setShuffle={setShuffle}
       />
 
       <div className="min-h-[calc(100vh-64px)] bg-slate-50">
@@ -221,6 +232,7 @@ export default function SessionPage() {
                     setEditingQuestion(q);
                     setShowAddDrawer(true);
                   }}
+                  onDelete={handleDelete}
                 />
 
                 <NavigationControls

@@ -4,7 +4,7 @@ import SessionPage from "./pages/SessionPage";
 import DashboardPage from "./pages/DashboardPage";
 import RevisionPage from "./pages/RevisionPage";
 import LottieLoader from "./components/LottieLoader";
-
+import { Toaster } from "react-hot-toast";
 export default function App() {
   const [loading, setLoading] = useState(true);
 
@@ -34,6 +34,15 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            fontSize: "13px",
+            borderRadius: "8px",
+          },
+        }}
+      />
       <Routes>
         <Route path="/" element={<SessionPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />

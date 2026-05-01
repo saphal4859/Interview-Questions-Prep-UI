@@ -3,7 +3,9 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-
+import { api } from "../api/api";
+import { FaTrash } from "react-icons/fa";
+import toast from "react-hot-toast";
 export default function QuestionCard({
   question,
   currentIndex,
@@ -12,10 +14,12 @@ export default function QuestionCard({
   autoShowAnswer,
   onShowAnswer,
   achievedCount,
-  onEdit, 
+  onEdit,
+  onDelete,
 }) {
   const [showExplanation, setShowExplanation] = useState(false);
   const [showCode, setShowCode] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   useEffect(() => {
     if (autoShowAnswer && !showAnswer) {
       onShowAnswer();
@@ -28,9 +32,55 @@ export default function QuestionCard({
       </div>
     );
   }
+  const handleDelete = async () => {
+    const toastId = toast(
+      (t) => (
+        <div className="flex items-center gap-3">
+          <span className="text-sm">Delete this question?</span>
+          <button
+            onClick={async () => {
+              toast.dismiss(t.id);
+
+              try {
+                setIsDeleting(true);
+
+                await api.delete(`/api/questions/${q.id}`);
+
+                setTimeout(() => {
+                  onDelete?.(q.id);
+                  toast.success("Question deleted");
+                }, 300);
+              } catch (err) {
+                console.error(err);
+                toast.error("Failed to delete");
+                setIsDeleting(false);
+              }
+            }}
+            className="px-2 py-1 text-xs bg-red-500 text-white rounded"
+          >
+            Yes
+          </button>
+
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="px-2 py-1 text-xs bg-gray-200 rounded"
+          >
+            No
+          </button>
+        </div>
+      ),
+      {
+        duration: 4000,
+      },
+    );
+  };
 
   return (
-    <div className="bg-white border rounded-xl shadow-sm p-6">
+    <div
+      className={`bg-white border rounded-xl shadow-sm p-6 transition-all duration-300 ${
+        isDeleting ? "opacity-0 scale-95" : "opacity-100 scale-100"
+      }`}
+    >
       {/* Progress */}
       {totalCount > 0 && (
         <>
@@ -50,7 +100,7 @@ export default function QuestionCard({
 
       {/* Header */}
       {totalCount > 0 && (
-<div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center mb-4 text-sm text-gray-500">
+        <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center mb-4 text-sm text-gray-500">
           <span className="flex flex-wrap items-center gap-2">
             <span>
               Question{" "}
@@ -101,6 +151,12 @@ export default function QuestionCard({
           >
             ✏️ Edit
           </button>
+          <button
+            onClick={handleDelete}
+            className="text-xs px-3 py-1 rounded-md border hover:bg-red-500 hover:text-white transition"
+          >
+            <FaTrash />
+          </button>
         </div>
       )}
 
@@ -108,7 +164,6 @@ export default function QuestionCard({
       <div
         className="font-semibold leading-snug
   text-xl sm:text-2xl md:text-3xl text-red-600"
-
       >
         {question.questionText}
       </div>

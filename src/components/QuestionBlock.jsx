@@ -3,16 +3,70 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-
-export default function QuestionBlock({ q, index, expandAll, onEdit }) {
+import { api } from "../api/api";
+import { FaTrash } from "react-icons/fa";
+import toast from "react-hot-toast";
+export default function QuestionBlock({
+  q,
+  index,
+  expandAll,
+  onEdit,
+  onDelete,
+}) {
   const [showExplanation, setShowExplanation] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const handleDelete = async () => {
+    const toastId = toast(
+      (t) => (
+        <div className="flex items-center gap-3">
+          <span className="text-sm">Delete this question?</span>
+          <button
+            onClick={async () => {
+              toast.dismiss(t.id);
 
+              try {
+                setIsDeleting(true);
+
+                await api.delete(`/api/questions/${q.id}`);
+
+                setTimeout(() => {
+                  onDelete?.(q.id);
+                  toast.success("Question deleted");
+                }, 300);
+              } catch (err) {
+                console.error(err);
+                toast.error("Failed to delete");
+                setIsDeleting(false);
+              }
+            }}
+            className="px-2 py-1 text-xs bg-red-500 text-white rounded"
+          >
+            Yes
+          </button>
+
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="px-2 py-1 text-xs bg-gray-200 rounded"
+          >
+            No
+          </button>
+        </div>
+      ),
+      {
+        duration: 4000,
+      },
+    );
+  };
   useEffect(() => {
     setShowExplanation(expandAll);
   }, [expandAll]);
 
   return (
-    <div className="border-b py-4">
+    <div
+      className={`border-b py-4 transition-all duration-300 ${
+        isDeleting ? "opacity-0 scale-95" : "opacity-100 scale-100"
+      }`}
+    >
       {/* 🔹 Question + Explain button */}
       <div className="flex items-start justify-between gap-3">
         {/* Question */}
@@ -34,6 +88,13 @@ export default function QuestionBlock({ q, index, expandAll, onEdit }) {
             className="text-[11px] px-2 py-1 rounded bg-gray-100 hover:bg-gray-200"
           >
             ✏️ Edit
+          </button>
+          {/* 🗑 DELETE BUTTON */}
+          <button
+            onClick={handleDelete}
+            className="text-[11px] px-2 py-1 rounded bg-gray-100 hover:bg-red-500 hover:text-white transition"
+          >
+            <FaTrash />
           </button>
         </div>
       </div>
