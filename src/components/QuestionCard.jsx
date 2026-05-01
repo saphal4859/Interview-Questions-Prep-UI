@@ -45,10 +45,10 @@ export default function QuestionCard({
               try {
                 setIsDeleting(true);
 
-                await api.delete(`/api/questions/${q.id}`);
+                await api.delete(`/api/questions/${question.id}`);
 
                 setTimeout(() => {
-                  onDelete?.(q.id);
+                  onDelete?.(question.id);
                   toast.success("Question deleted");
                 }, 300);
               } catch (err) {
@@ -111,10 +111,12 @@ export default function QuestionCard({
                 </b>
               </span>
 
-              {q.link && (
+              {question?.link?.trim() && (
                 <a
                   href={
-                    q.link.startsWith("http") ? q.link : `https://${q.link}`
+                    question.link.startsWith("http")
+                      ? question.link
+                      : `https://${question.link}`
                   }
                   target="_blank"
                   rel="noopener noreferrer"
