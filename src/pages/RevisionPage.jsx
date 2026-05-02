@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { api } from "../api/api";
 import TopFilterBar from "../components/TopFilterBar";
 import QuestionBlock from "../components/QuestionBlock";
 import AddQuestionDrawer from "../components/AddQuestionDrawer";
+
 export default function RevisionPage() {
   // 🔹 Metadata
   const [meta, setMeta] = useState({
@@ -11,6 +12,7 @@ export default function RevisionPage() {
     difficulties: [],
   });
   const [totalCount, setTotalCount] = useState(0);
+
   // 🔹 Filters
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
@@ -28,25 +30,29 @@ export default function RevisionPage() {
 
   // 🔹 UI
   const [loading, setLoading] = useState(false);
-
-  // 🔥 GLOBAL TOGGLE
   const [expandAll, setExpandAll] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(null);
+
+  // 🔹 SORT STATE
+  const [sortOrder, setSortOrder] = useState("desc"); // default newest first
+
   // 🔹 Load metadata
   useEffect(() => {
     api.get("/api/metadata/filters").then((res) => setMeta(res.data));
   }, []);
+
   const handleEdit = (question) => {
     setExpandAll(false);
     setEditingQuestion(question);
     setIsDrawerOpen(true);
   };
-  // Handle delete
+
   const handleDelete = (id) => {
     setQuestions((prev) => prev.filter((q) => q.id !== id));
   };
-  // 🔹 Start Session
+
+  // 🔹 Fetch questions
   const fetchQuestions = async () => {
     try {
       setLoading(true);
@@ -72,7 +78,7 @@ export default function RevisionPage() {
       setSessionId(res.data.sessionId);
       setQuestions(res.data.questions);
       setTotalCount(res.data.totalCount);
-      // ✅ Reset
+
       setPage(0);
       setExpandAll(false);
 
@@ -84,7 +90,7 @@ export default function RevisionPage() {
     }
   };
 
-  // 🔹 Next 50 Questions
+  // 🔹 Fetch next batch
   const fetchNext = async () => {
     if (!sessionId) return;
 
@@ -97,8 +103,6 @@ export default function RevisionPage() {
 
       if (!res.data.completed) {
         setQuestions(res.data.questions);
-
-        // ✅ Pagination + reset expand
         setPage((prev) => prev + 1);
         setExpandAll(false);
 
@@ -110,6 +114,17 @@ export default function RevisionPage() {
       setLoading(false);
     }
   };
+
+  // 🔹 SORTED QUESTIONS (memoized for performance)
+  const sortedQuestions = useMemo(() => {
+    return [...questions].sort((a, b) => {
+      if (sortOrder === "asc") {
+        return a.id - b.id;
+      } else {
+        return b.id - a.id;
+      }
+    });
+  }, [questions, sortOrder]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
@@ -140,14 +155,29 @@ export default function RevisionPage() {
           </h1>
 
           {questions.length > 0 && (
-            <button
-              onClick={() => setExpandAll((prev) => !prev)}
-              className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition text-sm"
-            >
-              {expandAll ? "Collapse All" : "Expand All"}
-            </button>
+            <div className="flex items-center gap-2">
+              {/* Expand */}
+              <button
+                onClick={() => setExpandAll((prev) => !prev)}
+                className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition text-sm"
+              >
+                {expandAll ? "Collapse All" : "Expand All"}
+              </button>
+
+              {/* Sort */}
+              <button
+                onClick={() =>
+                  setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
+                }
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm"
+              >
+                {sortOrder === "asc" ? "Ascending ↑" : "Descending ↓"}
+              </button>
+            </div>
           )}
         </div>
+
+        {/* 🔹 COUNT */}
         {questions.length > 0 && (
           <p className="text-sm text-gray-500 mb-4">
             Showing <b>{page * 50 + 1}</b> –{" "}
@@ -173,19 +203,25 @@ export default function RevisionPage() {
         {/* 🔹 QUESTIONS */}
         {questions.length > 0 && (
           <div className="bg-white border rounded-xl shadow-sm px-4 divide-y">
-            {questions.map((q, index) => (
-              <QuestionBlock
-                key={q.id}
-                q={q}
-                index={page * 50 + index}
-                expandAll={expandAll}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-              />
-            ))}
+            {sortedQuestions.map((q, index) => {
+              const displayIndex =
+                sortOrder === "asc"
+                  ? index
+                  : sortedQuestions.length - index - 1;
+
+              return (
+                <QuestionBlock
+                  key={q.id}
+                  q={q}
+                  index={displayIndex}
+                  expandAll={expandAll}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                />
+              );
+            })}
           </div>
         )}
-
         {/* 🔹 NEXT BUTTON */}
         {questions.length > 0 && (
           <div className="mt-10 flex justify-center">
@@ -198,6 +234,8 @@ export default function RevisionPage() {
             </button>
           </div>
         )}
+
+        {/* 🔹 DRAWER */}
         <AddQuestionDrawer
           open={isDrawerOpen}
           onClose={() => {
@@ -207,7 +245,6 @@ export default function RevisionPage() {
           meta={meta}
           editingQuestion={editingQuestion}
           onQuestionUpdated={(updatedQuestion) => {
-            // 🔥 instant UI update
             setQuestions((prev) =>
               prev.map((q) =>
                 q.id === updatedQuestion.id ? updatedQuestion : q,
