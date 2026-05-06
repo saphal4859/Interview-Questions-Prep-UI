@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import SessionPage from "./pages/SessionPage";
 import DashboardPage from "./pages/DashboardPage";
 import RevisionPage from "./pages/RevisionPage";
+import NotesPage from "./pages/NotesPage";
 import LottieLoader from "./components/LottieLoader";
 import { Toaster } from "react-hot-toast";
 export default function App() {
@@ -47,6 +48,7 @@ export default function App() {
         <Route path="/" element={<SessionPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/revision" element={<RevisionPage />} />
+        <Route path="/notes" element={<NotesPage />} />
       </Routes>
     </BrowserRouter>
   );
