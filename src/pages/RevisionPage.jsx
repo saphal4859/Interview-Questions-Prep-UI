@@ -34,8 +34,8 @@ export default function RevisionPage() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(null);
 
-  // 🔹 SORT STATE
-  const [sortOrder, setSortOrder] = useState("desc"); // default newest first
+  // 🔹 SORT STATE (no default sort)
+  const [sortOrder, setSortOrder] = useState(null);
 
   // 🔹 Load metadata
   useEffect(() => {
@@ -81,6 +81,7 @@ export default function RevisionPage() {
 
       setPage(0);
       setExpandAll(false);
+      setSortOrder(null); // reset sort when new session starts
 
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
@@ -105,6 +106,7 @@ export default function RevisionPage() {
         setQuestions(res.data.questions);
         setPage((prev) => prev + 1);
         setExpandAll(false);
+        setSortOrder(null); // reset sort for next batch too
 
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
@@ -115,14 +117,15 @@ export default function RevisionPage() {
     }
   };
 
-  // 🔹 SORTED QUESTIONS (memoized for performance)
+  // 🔹 SORTED QUESTIONS
   const sortedQuestions = useMemo(() => {
+    if (!sortOrder) return questions;
+
     return [...questions].sort((a, b) => {
       if (sortOrder === "asc") {
         return a.id - b.id;
-      } else {
-        return b.id - a.id;
       }
+      return b.id - a.id;
     });
   }, [questions, sortOrder]);
 
@@ -167,11 +170,19 @@ export default function RevisionPage() {
               {/* Sort */}
               <button
                 onClick={() =>
-                  setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
+                  setSortOrder((prev) => {
+                    if (prev === null) return "asc";
+                    if (prev === "asc") return "desc";
+                    return "asc";
+                  })
                 }
                 className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm"
               >
-                {sortOrder === "asc" ? "Ascending ↑" : "Descending ↓"}
+                {sortOrder === null
+                  ? "Sort"
+                  : sortOrder === "asc"
+                    ? "Ascending ↑"
+                    : "Descending ↓"}
               </button>
             </div>
           )}
@@ -205,9 +216,9 @@ export default function RevisionPage() {
           <div className="bg-white border rounded-xl shadow-sm px-4 divide-y">
             {sortedQuestions.map((q, index) => {
               const displayIndex =
-                sortOrder === "asc"
-                  ? index
-                  : sortedQuestions.length - index - 1;
+                sortOrder === "desc"
+                  ? sortedQuestions.length - index - 1
+                  : index;
 
               return (
                 <QuestionBlock
@@ -222,6 +233,7 @@ export default function RevisionPage() {
             })}
           </div>
         )}
+
         {/* 🔹 NEXT BUTTON */}
         {questions.length > 0 && (
           <div className="mt-10 flex justify-center">
